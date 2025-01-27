@@ -1,0 +1,17 @@
+{
+  "name": "Botohiko_Kakita",
+  "version": "1.0.0",
+  "description": "auto Dm my GM because is bad at scheduling",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node deploy-commands.js && node src/index.js",
+    "deploy": "node deploy-commands.js"
+  },
+  "private": true,
+  "dependencies": {
+    "discord.js": "^14.17.3",
+    "dotenv": "^16.4.7",
+    "node-cron": "^3.0.3"
+  }
+}

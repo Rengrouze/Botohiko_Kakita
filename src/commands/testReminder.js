@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
+const config = require('../../config/config');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -6,18 +7,25 @@ module.exports = {
         .setDescription('Teste l\'envoi du message quotidien'),
 
     async execute(interaction) {
-        try {
-            // Accéder au reminderService depuis le client
-            await interaction.client.reminderService.sendReminder();
-
+        // Check if user can do this
+        if (interaction.user.id !== config.creatorId) {
             await interaction.reply({
-                content: 'Message de test envoyé avec succès !',
+                content: '*Médite sur l\'audace de l\'impudent*\nSeul le vénérable Rengret (donc moi même) peut utiliser cette commande...',
+                ephemeral: true
+            });
+            return;
+        }
+
+        try {
+            await interaction.client.reminderService.sendReminder();
+            await interaction.reply({
+                content: '*Incline respectueusement la tête*\nLe message de test a été envoyé avec succès.',
                 ephemeral: true
             });
         } catch (error) {
             console.error('Erreur lors du test du reminder:', error);
             await interaction.reply({
-                content: 'Une erreur est survenue lors de l\'envoi du message de test.',
+                content: '*Fronce les sourcils avec inquiétude*\nUne perturbation dans l\'harmonie des messages est survenue.',
                 ephemeral: true
             });
         }

@@ -1,7 +1,7 @@
 module.exports = {
     name: 'interactionCreate',
     async execute(interaction, client) {
-        // Si c'est une commande slash
+        // if slash command
         if (interaction.isChatInputCommand()) {
             const command = client.commands.get(interaction.commandName);
             if (!command) return;
@@ -17,7 +17,7 @@ module.exports = {
             }
         }
 
-        // Si c'est une interaction avec un bouton (pour notre système de rappel)
+        // if button interaction
         if (interaction.isButton()) {
             try {
                 await client.reminderService.handleResponse(interaction);

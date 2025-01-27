@@ -1,4 +1,4 @@
-const { SlashCommandBuilder} = require('discord.js');
+const { SlashCommandBuilder } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -6,16 +6,6 @@ module.exports = {
         .setDescription('Vérifie l\'harmonie des éléments avec Botohiko Kakita (j\'ai atteint l\'illumination juste pour ça)'),
 
     async execute(interaction) {
-        const sent = await interaction.reply({
-            content: '*Interrompt sa méditation avec une grâce calculée...*',
-            ephemeral: true,
-            fetchReply: true
-        });
-
-        const latency = sent.createdTimestamp - interaction.createdTimestamp;
-        const apiLatency = Math.round(interaction.client.ws.ping);
-
-
         const sassyResponses = [
             //passive-agressive
             '*Ajuste son hakama avec une élégance minimaliste* L\'illumination m\'a libéré des vêtements superflus... comme certains se libèrent de leurs engagements. 🦢',
@@ -40,9 +30,29 @@ module.exports = {
 
         const randomResponse = sassyResponses[Math.floor(Math.random() * sassyResponses.length)];
 
-        await interaction.reply({
-            content: `${randomResponse}\n\n*Consulte les fortunes, les augures numériques et forcément, l'esprit de la machine *\nTemps de réponse : ${interaction.createdTimestamp}ms\nHarmonie des serveurs : ${interaction.client.ws.ping}ms`,
-            flags: [64] // Discord.js flag for ephemeral message
-        });
+        // Ensure the interaction hasn't already been responded to
+        if (interaction.deferred || interaction.replied) {
+            console.log('Interaction already responded');
+            return;
+        }
+
+        try {
+            await interaction.deferReply({ ephemeral: true });
+
+            const latency = Date.now() - interaction.createdTimestamp;
+            const apiLatency = Math.round(interaction.client.ws.ping);
+
+            await interaction.editReply({
+                content: `${randomResponse}\n\n*Consulte les fortunes, les augures numériques et forcément, l'esprit de la machine *\nTemps de réponse : ${latency}ms\nHarmonie des serveurs : ${apiLatency}ms`
+            });
+        } catch (error) {
+            console.error('Error in ping command:', error);
+            try {
+                await interaction.reply({
+                    content: 'Une erreur est survenue lors de l\'exécution de cette commande.',
+                    ephemeral: true
+                });
+            } catch {}
+        }
     }
 };

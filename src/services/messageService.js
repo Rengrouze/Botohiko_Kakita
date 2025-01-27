@@ -128,7 +128,7 @@ class MessageService {
                 components: [buttons]
             });
 
-            // Désactiver les boutons après 24h
+            // button are inactive after 24h
             setTimeout(async () => {
                 try {
                     const disabledButtons = this.createDisabledButtons();

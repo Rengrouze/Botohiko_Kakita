@@ -1,4 +1,3 @@
-// reminderService.js
 const cron = require('node-cron');
 const { Events } = require('discord.js');
 const config = require('../../config/config');
@@ -9,8 +8,11 @@ class ReminderService {
         this.client = client;
         this.playerResponses = new Map();
         this.sessionTime = null;
+        this.lastInteraction = new Map(); // anti spam
         this.setupModalHandler();
     }
+
+
 
     setupModalHandler() {
         this.client.on(Events.InteractionCreate, async interaction => {
@@ -18,6 +20,16 @@ class ReminderService {
                 await this.handleTimeModalSubmit(interaction);
             }
         });
+    }
+
+    isSpamming(userId) {
+        const lastTime = this.lastInteraction.get(userId);
+        const now = Date.now();
+        if (lastTime && now - lastTime < 2000) { // 2 seconds delay minimum
+            return true;
+        }
+        this.lastInteraction.set(userId, now);
+        return false;
     }
 
     async sendReminder() {
@@ -41,7 +53,6 @@ class ReminderService {
 
         cron.schedule(config.scheduleTime, () => {
             this.sendReminder();
-            // Réinitialiser l'état quotidien
             this.playerResponses.clear();
             this.sessionTime = null;
         });
@@ -54,50 +65,41 @@ class ReminderService {
             if (!interaction.isButton()) return;
 
             const buttonId = interaction.customId;
-
-            // Gérer les réponses des joueurs
+            if (this.isSpamming(interaction.user.id)) {
+                await interaction.reply({
+                    content: config.messages.errors.spamming,
+                    ephemeral: true
+                });
+                return;
+            }
             if (buttonId.startsWith('player_')) {
                 await this.handlePlayerResponse(interaction);
                 return;
             }
-
-            // Gérer la réponse du MJ
             if (interaction.user.id !== config.targetUserId) {
                 await interaction.reply({
-                    content: '*Hausse un sourcil avec une élégance désapprobatrice*\nSeuls les initiés sont autorisés à répondre à cette question...',
+                    content: config.formatMessage(config.messages.success.eventCreated, {
+                        time: this.sessionTime,
+                        channelId: config.gameVoiceChannelId
+                    }),
                     ephemeral: true
                 });
-                return;
+
             }
 
             if (buttonId === 'yes') {
                 const modal = messageService.createTimeModal();
                 await interaction.showModal(modal);
             } else if (buttonId === 'no') {
-                const refusalResponses = [
-                    "*Médite intensément sur la nature du planning vide* Je vois... Le néant nous appelle à nouveau.",
-                    "*Arrange son hakama avec une déception parfaitement étudiée* Les voies de l'harmonie sont vraiment... impénétrables.",
-                    "*Soupire avec une élégance résignée* Une autre journée à contempler le vide de notre planning...",
-                    "*Fait tourner son mala avec une grâce passive-agressive* Le karma se souviendra de ceci.",
-                    "*Écrit un haiku dans l'air* 'Comme la rosée / Les espoirs de session fondent / Sous le soleil cruel'",
-                    "*Ajuste sa position de méditation* Je vais méditer sur la nature éphémère des opportunités de jeu.",
-                    "*Range son katana avec une lenteur délibérée* La voie du bushido nous enseigne aussi la patience... Beaucoup de patience.",
-                    "*Disperse des pétales de cerisier imaginaires* Aussi éphémères que nos sessions...",
-                    "*Consulte les augures* Ah... Les présages avaient prédit ce refus. Comme les 257 précédents.",
-                    "*Lisse son jardin zen avec une précision passive-agressive* Un autre motif dans le sable de nos reports..."
-                ];
-
-                const randomRefusal = refusalResponses[Math.floor(Math.random() * refusalResponses.length)];
+                const refusalMessage = config.getRandomRefusal();
                 await interaction.reply({
-                    content: randomRefusal,
+                    content: refusalMessage,
                     ephemeral: true
                 });
-            }
-
-            // Désactiver les boutons après la réponse
-            if (interaction.message) {
-                const disabledButtons = messageService.createDisabledButtons();
-                await interaction.message.edit({ components: [disabledButtons] });
+                if (interaction.message) {
+                    const disabledButtons = messageService.createDisabledButtons();
+                    await interaction.message.edit({ components: [disabledButtons] });
+                }
             }
         } catch (error) {
             console.error('Erreur dans handleResponse:', error);
@@ -114,20 +116,30 @@ class ReminderService {
         try {
             const time = interaction.fields.getTextInputValue('timeInput');
 
-            // Valider le format de l'heure (HH:MM)
             const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
             if (!timeRegex.test(time)) {
                 await interaction.reply({
-                    content: '*Fronce les sourcils avec élégance*\nLe format de l\'heure doit être HH:MM.',
-                ephemeral: true
-            });
+                    content: '*Fronce les sourcils avec élégance*\nLe format de l\'heure doit être HH:MM. Vous pouvez réessayer en cliquant à nouveau sur le bouton.',
+                    ephemeral: true
+                });
                 return;
             }
 
-            // Stocker l'heure de la session
-            this.sessionTime = time;
+            // Calcul de l'heure de session
+            const [hours, minutes] = time.split(':').map(Number);
+            const sessionTime = new Date();
+            sessionTime.setHours(hours, minutes, 0, 0);
 
-            // Réinitialiser les réponses des joueurs
+            const now = new Date();
+            if (sessionTime < now) {
+                await interaction.reply({
+                    content: '*Médite sur les paradoxes temporels avec consternation*\nMême mon illumination ne me permet pas de remonter le temps... Proposez une heure future en cliquant à nouveau sur le bouton.',
+                    ephemeral: true
+                });
+                return;
+            }
+
+            this.sessionTime = time;
             this.playerResponses.clear();
 
             await interaction.reply({
@@ -135,7 +147,33 @@ class ReminderService {
                 ephemeral: true
             });
 
-            // Notifier les autres joueurs
+            const message = await interaction.message;
+            if (message) {
+                const disabledButtons = messageService.createDisabledButtons();
+                await message.edit({ components: [disabledButtons] });
+            }
+
+            // Calcul du délai avant timeout (30 minutes avant la session)
+            const thirtyMinutesBeforeSession = new Date(sessionTime);
+            thirtyMinutesBeforeSession.setMinutes(thirtyMinutesBeforeSession.getMinutes() - 30);
+
+            const timeoutDelay = thirtyMinutesBeforeSession.getTime() - now.getTime();
+
+            // Si on a plus de 30 minutes avant la session
+            if (timeoutDelay > 0) {
+                if (this.responseTimeout) {
+                    clearTimeout(this.responseTimeout);
+                }
+
+                console.log(`Timeout programmé pour dans ${Math.floor(timeoutDelay / 60000)} minutes`);
+
+                this.responseTimeout = setTimeout(() => {
+                    this.handleResponseTimeout();
+                }, timeoutDelay);
+            } else {
+                console.log('Session trop proche, pas de timeout nécessaire');
+            }
+
             let notifiedPlayers = 0;
             for (const playerId of config.playerIds) {
                 try {
@@ -151,11 +189,20 @@ class ReminderService {
 
             if (notifiedPlayers === 0) {
                 console.error('Aucun joueur n\'a pu être notifié');
+                await interaction.followUp({
+                    content: '*Fronce les sourcils avec inquiétude*\nJe n\'ai pas pu notifier les joueurs...',
+                    ephemeral: true
+                });
             }
         } catch (error) {
             console.error('Erreur dans handleTimeModalSubmit:', error);
             if (!interaction.replied && !interaction.deferred) {
                 await interaction.reply({
+                    content: '*Fronce les sourcils avec élégance*\nUne perturbation dans l\'harmonie des notifications...',
+                    ephemeral: true
+                });
+            } else {
+                await interaction.followUp({
                     content: '*Fronce les sourcils avec élégance*\nUne perturbation dans l\'harmonie des notifications...',
                     ephemeral: true
                 });
@@ -166,19 +213,24 @@ class ReminderService {
     // Dans reminderService.js
     async handlePlayerResponse(interaction) {
         try {
-            const isAvailable = interaction.customId === 'player_yes';
-            const playerId = interaction.user.id;
-
-            console.log(`Réponse reçue du joueur ${playerId}: ${isAvailable ? 'disponible' : 'non disponible'}`);
-
             if (!this.sessionTime) {
-                console.error('Pas d\'heure de session définie');
                 await interaction.reply({
                     content: '*Médite sur une incohérence temporelle*\nIl semble qu\'aucune session ne soit actuellement planifiée...',
                     ephemeral: true
                 });
                 return;
             }
+
+            // Vérifier si le joueur a déjà répondu
+            if (this.playerResponses.has(interaction.user.id)) {
+                await interaction.reply({
+                    content: '*Hausse un sourcil désapprobateur*\nVous avez déjà fait connaître votre disponibilité...',
+                    ephemeral: true
+                });
+                return;
+            }
+
+            const isAvailable = interaction.customId === 'player_yes';
 
             await interaction.reply({
                 content: isAvailable
@@ -187,61 +239,53 @@ class ReminderService {
                 ephemeral: true
             });
 
-            this.playerResponses.set(playerId, isAvailable);
-            console.log('État actuel des réponses:', Object.fromEntries(this.playerResponses));
+            this.playerResponses.set(interaction.user.id, isAvailable);
+
+            // Si un joueur n'est pas disponible, annuler la session
+            if (!isAvailable) {
+                const guild = this.client.guilds.cache.get(config.guildId);
+                if (guild) {
+                    const channel = await guild.channels.fetch(config.notificationChannelId);
+                    if (channel) {
+                        await channel.send({
+                            content: `<@&${config.gameRoleId}> *Soupire avec une élégance résignée*\nLes astres ne sont pas alignés aujourd\'hui... Session annulée.`
+                        });
+                    }
+                }
+                this.resetSessionState();
+                return;
+            }
 
             const allResponded = config.playerIds.every(id => this.playerResponses.has(id));
             const allAvailable = Array.from(this.playerResponses.values()).every(response => response === true);
 
-            console.log('Statut des réponses:', {
-                nombreDeReponses: this.playerResponses.size,
-                totalJoueurs: config.playerIds.length,
-                tousOntRepondu: allResponded,
-                tousSontDisponibles: allAvailable
-            });
-
             if (allResponded && allAvailable) {
                 try {
-                    // Récupérer la guild via le client
                     const guild = this.client.guilds.cache.get(config.guildId);
-
                     if (!guild) {
                         console.error('Guild non trouvée. ID:', config.guildId);
                         return;
                     }
 
-                    console.log('Guild trouvée:', guild.name);
-
-                    // Vérifier les permissions du bot dans la guild
-                    const botMember = await guild.members.fetch(this.client.user.id);
-                    console.log('Permissions du bot dans la guild:', botMember.permissions.toArray());
-
-                    // Récupérer le canal
                     const channel = await guild.channels.fetch(config.notificationChannelId);
-
                     if (!channel) {
                         console.error('Canal non trouvé. ID:', config.notificationChannelId);
                         return;
                     }
 
-                    console.log('Canal trouvé:', channel.name);
-
-                    // Vérifier les permissions spécifiques au canal
-                    const permissions = channel.permissionsFor(this.client.user);
-                    console.log('Permissions du bot dans le canal:', permissions ? permissions.toArray() : 'Aucune permission');
-
                     await this.createGameEvent(channel);
                 } catch (error) {
-                    console.error('Erreur détaillée lors de la récupération du canal:', error);
+                    console.error('Erreur lors de la création de l\'événement:', error);
                     await interaction.followUp({
-                        content: '*Médite intensément sur une erreur*\nLes voies de l\'harmonie sont perturbées... Erreur: ' + error.message,
+                        content: '*Médite intensément sur une erreur*\nLes voies de l\'harmonie sont perturbées...',
                         ephemeral: true
                     });
                 }
             }
 
+            // Désactiver les boutons après la réponse
             if (interaction.message) {
-                const disabledButtons = messageService.createDisabledButtons();
+                const disabledButtons = messageService.createDisabledPlayerButtons();
                 await interaction.message.edit({ components: [disabledButtons] });
             }
         } catch (error) {
@@ -255,6 +299,25 @@ class ReminderService {
         }
     }
 
+    async handleResponseTimeout() {
+        if (!this.sessionTime) return;
+
+        const guild = this.client.guilds.cache.get(config.guildId);
+        if (!guild) return;
+
+        try {
+            const channel = await guild.channels.fetch(config.notificationChannelId);
+            if (channel) {
+                await channel.send({
+                    content: `<@&${config.gameRoleId}> *Contemple le sablier vide*\nLe temps imparti pour les réponses est écoulé... La session est annulée.`
+                });
+            }
+        } catch (error) {
+            console.error('Erreur lors du timeout des réponses:', error);
+        } finally {
+            this.resetSessionState();
+        }
+    }
     async createGameEvent(channel) {
         try {
             if (!this.sessionTime) {
@@ -305,7 +368,7 @@ class ReminderService {
             if (event) {
                 console.log('Événement créé avec succès:', event.id);
                 await channel.send({
-                    content: `*Fait tinter une cloche de temple avec grâce*\n\nUne session a été programmée pour ${this.sessionTime} !\nRetrouvez-vous dans le salon vocal <#${config.gameVoiceChannelId}>.`
+                    content: `<@&${config.gameRoleId}> *Fait tinter une cloche de temple avec grâce*\n\nUne session a été programmée pour ${this.sessionTime} !\nRetrouvez-vous dans le salon vocal <#${config.gameVoiceChannelId}>.`
                 });
 
                 this.sessionTime = null;
@@ -323,6 +386,14 @@ class ReminderService {
                 console.error('Erreur lors de l\'envoi du message d\'erreur:', sendError);
             }
             throw error;
+        }
+    }
+    resetSessionState() {
+        this.sessionTime = null;
+        this.playerResponses.clear();
+        if (this.responseTimeout) {
+            clearTimeout(this.responseTimeout);
+            this.responseTimeout = null;
         }
     }
 }

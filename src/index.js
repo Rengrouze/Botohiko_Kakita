@@ -1,22 +1,11 @@
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
-const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const config = require('../config/config');
+const { createExpressServer, setupServerHeartbeat } = require('./utils/keepalive.js');
 
-// Configuration du serveur Express
-const app = express();
-const port = process.env.PORT || 10000;
-
-// Route simple pour satisfaire Render
-app.get('/', (req, res) => {
-    res.send('Botohiko Kakita est en service!');
-});
-
-// Démarrage du serveur Express
-app.listen(port, '0.0.0.0', () => {
-    console.log(`Serveur Express démarré sur le port ${port}`);
-});
+// Création du serveur Express
+const server = createExpressServer();
 
 // Configuration du client Discord
 const client = new Client({
@@ -58,6 +47,9 @@ for (const file of eventFiles) {
         client.on(event.name, (...args) => event.execute(...args, client));
     }
 }
+
+// Configuration du heartbeat serveur
+setupServerHeartbeat(server);
 
 // Gestion des erreurs
 process.on('unhandledRejection', error => {

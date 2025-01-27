@@ -17,7 +17,7 @@ module.exports = {
     gameVoiceChannelId: process.env.GAME_VOICE_CHANNEL_ID,
 
     // Schedule Configuration
-    scheduleTime: '0 7 * * *', // 7 AM every day
+    scheduleTime: '0 9 * * *', // 9 AM every day
 
     // Message Configuration
     messages: {

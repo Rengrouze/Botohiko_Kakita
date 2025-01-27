@@ -8,7 +8,7 @@ class MessageService {
             .setColor('#89CFF0')
             .setAuthor({
                 name: '🦢 Kakita Hirohiko - Moine de la Grue',
-                iconURL: 'https://cdn.discordapp.com/avatars/1234/crane_mon.png'
+                iconURL: 'https://files.d20.io/images/382626549/qs-z2zBgerPiWwSzDRMUaw/med.jpg?1709334427'
             })
             .setDescription(config.getDailyQuestion())
             .setFooter({

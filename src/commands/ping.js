@@ -40,9 +40,9 @@ module.exports = {
 
         const randomResponse = sassyResponses[Math.floor(Math.random() * sassyResponses.length)];
 
-        await interaction.editReply({
-            content: `${randomResponse}\n\n*Consulte les fortunes, les augures numériques et forcément, l'esprit de la machine *\nTemps de réponse : ${latency}ms\nHarmonie des serveurs : ${apiLatency}ms`,
-            ephemeral: true
+        await interaction.reply({
+            content: `${randomResponse}\n\n*Consulte les fortunes, les augures numériques et forcément, l'esprit de la machine *\nTemps de réponse : ${interaction.createdTimestamp}ms\nHarmonie des serveurs : ${interaction.client.ws.ping}ms`,
+            flags: [64] // Discord.js flag for ephemeral message
         });
     }
 };

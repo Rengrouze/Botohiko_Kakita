@@ -1,5 +1,6 @@
-const ReminderService = require('../services/reminderService');
-const setupDiscordHeartbeat = require('../utils/discordHearbeat'); // Nouveau module
+const ReminderService = require('../services/reminderService/reminderService');
+const setupDiscordHeartbeat = require("../utils/discordHearbeat");
+
 
 module.exports = {
     name: 'ready',
@@ -7,15 +8,13 @@ module.exports = {
     execute(client) {
         console.log(`Bot connecté en tant que ${client.user.tag}`);
 
-        // Initialise system
-        const reminderService = new ReminderService(client);
-        client.reminderService = reminderService; // Stocking service for further usage
-        reminderService.startScheduler();
+        // Initialise les services
+        client.reminderService = new ReminderService(client);
 
         // Initialise le heartbeat Discord
         const stopHeartbeat = setupDiscordHeartbeat(client);
 
-        // Optionnel : Gérer l'arrêt du bot
+        // Gestion de l'arrêt du bot
         client.on('close', () => {
             stopHeartbeat();
         });

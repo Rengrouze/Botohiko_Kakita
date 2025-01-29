@@ -2,11 +2,13 @@ const { ActivityType } = require('discord.js');
 
 function setupDiscordHeartbeat(client) {
     const zenStatuses = [
-        { name: 'méditer sur l\'harmonie', type: ActivityType.Custom },
+        { name: 'médite sur l\'harmonie', type: ActivityType.Custom },
         { name: 'le flux du destin', type: ActivityType.Watching },
         { name: 'l\'art du planning', type: ActivityType.Listening },
-        { name: 'avec le destin', type: ActivityType.Playing },
-        { name: 'l\'art du sarcasme zen', type: ActivityType.Competing }
+        { name: 'faire peur à Megumi', type: ActivityType.Playing },
+        { name: 'l\'art du sarcasme zen', type: ActivityType.Competing },
+        { name: 'Rituel de Mao ou invasion de rat ?', type: ActivityType.Playing },
+        { name: 'faire tourner la roue Karmique', type: ActivityType.Custom },
     ];
 
     function updateStatus() {

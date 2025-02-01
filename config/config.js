@@ -176,6 +176,39 @@ module.exports = {
             "*Rengaine son katana avec une lenteur délibérée* La voie du bushido enseigne l'honneur... Pas l'art d'esquiver les sessions, <@TARGET_USER_ID>. 🦢",
             "*Polit son sabre avec une attention méticuleuse* Plus affûté que les excuses de <@TARGET_USER_ID>... Difficile. 🦢"
         ],
+        imminentGifs: [
+            "https://media.giphy.com/media/QBd2kLB5qDmysEXre9/giphy.gif",  // Mr Bean qui regarde sa montre
+            "https://media.giphy.com/media/FoH28ucxZFJZu/giphy.gif",        // Titanic attente dramatique
+            "https://media.giphy.com/media/jZAwc1FZ4TednLkWwu/giphy.gif",   // LeBron "Dame Time"
+            "https://media.giphy.com/media/PCvkgunX9ZbEEyfTQH/giphy.gif",   // Ghost "Where you at"
+            "https://media.giphy.com/media/lP4jmO461gq9uLzzYc/giphy.gif",   // Still waiting
+            "https://media.giphy.com/media/QhjR3MG9ZFfjB6BtIZ/giphy.gif",   // I'm still waiting
+            "https://media.giphy.com/media/26his5i9YJTqsqCyY/giphy.gif",    // Desperate housewives waiting
+            "https://media.giphy.com/media/229Pljon180JF07BaX/giphy.gif",   // Late night waiting
+            "https://media.giphy.com/media/ZR8teuiCs3AkSkzjnG/giphy.gif",   // Squid Game time passing
+            "https://media.giphy.com/media/BDQmMy3ZM8sgRNFkhe/giphy.gif",   // Big Bird waiting
+            "https://media.giphy.com/media/ZXKZWB13D6gFO/giphy.gif"         // Alice in Wonderland bored
+        ],
+
+        imminentMessages: [
+            "*Consulte le sablier avec insistance* Il semblerait que l'heure approche... ou pas ? 🦢",
+            "*Médite de façon de plus en plus audible* Le temps file, comme nos espoirs de session... 🦢",
+            "*Fait tinter sa cloche de temple avec une régularité passive-agressive* Les disciples attendent... 🦢",
+            "*Arrange son hakama pour la énième fois* L'impatience n'est pas zen... Mais là quand même... 🦢",
+            "*Compte les grains de son mala* Un grain, une minute de retard... J'en suis au troisième tour... 🦢",
+            "*Contemple le vide de la salle* Le néant est moins profond que notre attente... 🦢",
+            "*Pratique la calligraphie* Je écris 'patience' depuis une heure... 🦢",
+            "*Aligne des pierres zen* Comme nos messages sans réponse... 🦢",
+            "*Observe la course du soleil* Même lui avance plus vite que cette session... 🦢",
+            "*Prépare son quinzième thé* L'eau bout plus vite que la session démarre... 🦢",
+            "*Arbore un sourire taquin* C'est imminent... 🦢"
+        ],
+
+        imminentStart: "*S'incline avec une détermination inquiétante* Le compte à rebours de votre conscience commence... 🦢",
+        imminentStop: "*Range son sablier avec une satisfaction évidente* La méditation intensive a porté ses fruits... 🦢",
+        imminentAlreadyActive: "*Hausse un sourcil perplexe* La méditation intensive est déjà en cours... Votre culpabilité est-elle si grande ? 🦢",
+        imminentNotActive: "*Médite sur le vide de la requête* Il n'y a pas de méditation intensive à arrêter... 🦢"
+
     },
 
     // Timeout Configuration
@@ -194,6 +227,11 @@ module.exports = {
     },
     getRandomMJSelfRoast(){
         return this.messages.mjSelfRoastResponses[Math.floor(Math.random() * this.messages.mjSelfRoastResponses.length)];
+    },
+    getRandomImminentMessage() {
+        const message = this.messages.imminentMessages[Math.floor(Math.random() * this.messages.imminentMessages.length)];
+        const gif = this.messages.imminentGifs[Math.floor(Math.random() * this.messages.imminentGifs.length)];
+        return { message, gif };
     },
 
     // Helper pour formater les messages avec des variables

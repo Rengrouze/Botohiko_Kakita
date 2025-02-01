@@ -17,7 +17,7 @@ module.exports = {
     gameVoiceChannelId: process.env.GAME_VOICE_CHANNEL_ID,
 
     // Schedule Configuration
-    scheduleTime: '0 9 * * *', // 9 AM every day
+    scheduleTime: '0 8 * * *', // 9 AM every day
 
     // Message Configuration
     messages: {
@@ -104,7 +104,78 @@ module.exports = {
 
             // direct
             "*Existe élégamment* Alors... Session ? *attend avec une patience passive-agressive*"
-        ]
+        ],
+        // Réponses quand le MJ essaie d'utiliser la commande roast
+        mjSelfRoastResponses: [
+            "*Médite sur l'ironie de la situation* Plutôt que de chercher à vous insulter vous-même, trouvez du temps pour des sessions ou pour prendre conscience de vos privilèges... 🦢",
+            "*Contemple le paradoxe avec amusement* L'auto-critique est une vertu, mais pas autant que la ponctualité... 🦢",
+            "*Arrange son hakama avec une ironie palpable* Votre talent pour l'auto-dérision serait mieux utilisé dans la planification de sessions... 🦢",
+            "*Fait tinter une cloche de sagesse* L'autocritique est le début de la sagesse, mais une session régulière serait un meilleur commencement... 🦢",
+            "*Consulte les augures avec perplexité* Les Fortunes suggèrent que votre énergie serait mieux investie dans l'organisation... 🦢",
+            "*Transcende momentanément la situation* Chercher à vous roast vous-même ne compensera pas l'absence de session... 🦢"
+        ],
+
+        roastResponses: [
+            // Absence et Communication
+            "*Consulte sa boîte aux lettres vide* Le silence de <@TARGET_USER_ID> est plus profond que ma méditation... 🦢",
+            "*Étudie les techniques de communication ancestrales* Même les signaux de fumée seraient plus efficaces que vos updates de planning, <@TARGET_USER_ID>... 🦢",
+            "*Attend un signe des cieux* Les prophéties sont plus claires que vos intentions de session, <@TARGET_USER_ID>... 🦢",
+            "*Observe les mouvements des nuages* Plus réguliers que vos messages de planification, <@TARGET_USER_ID>... 🦢",
+            "*Médite sur le concept du vide* Votre silence nous rapproche de l'illumination, <@TARGET_USER_ID>... Mais nous préférerions une date de session. 🦢",
+            "*Écoute le son d'une main qui applaudit* Plus audible que vos réponses aux messages, <@TARGET_USER_ID>... 🦢",
+            "*Contemple son téléphone en silence* Les notifications de <@TARGET_USER_ID> sont comme l'éveil : rares et inattendues... 🦢",
+            "*Déroule le parchemin des messages non lus* Plus court que celui de vos absences, <@TARGET_USER_ID>... 🦢",
+            "*Pratique l'art du pigeon voyageur* Même eux auraient plus de succès à vous joindre, <@TARGET_USER_ID>... 🦢",
+            "*Étudie les techniques de divination* Plus fiables que vos confirmations de session, <@TARGET_USER_ID>... 🦢",
+            "*Consulte la position des astres* Plus prévisible que votre planning, <@TARGET_USER_ID>... 🦢",
+            "*Médite sur les mystères de l'univers* Moins mystérieux que vos absences prolongées, <@TARGET_USER_ID>... 🦢",
+            "*Déchiffre d'anciens manuscrits* Plus faciles à comprendre que vos explications d'absence, <@TARGET_USER_ID>... 🦢",
+            "*Contemple le vol des oiseaux migrateurs* Leur retour est plus prévisible que le vôtre, <@TARGET_USER_ID>... 🦢",
+
+            // Culot et Audace
+            "*Renverse délicatement son thé* L'audace de <@TARGET_USER_ID> qui propose une session après trois semaines de silence... Même les Fortunes en restent muettes. 🦢",
+            "*Médite sur l'impermanence* Le culot de <@TARGET_USER_ID> est aussi grand que son agenda est vide... Les voies de l'harmonie sont vraiment impénétrables. 🦢",
+            "*Arrange ses soutras avec une précision étudiée* <@TARGET_USER_ID> a plus de culot que le Bouddha n'a de sagesse... Et ce n'est pas peu dire. 🦢",
+            "*Contemple une feuille qui tombe* Votre audace de demander si nous sommes disponibles ce soir, <@TARGET_USER_ID>, fait rougir jusqu'aux esprits des ancêtres... 🦢",
+            "*Aligne ses chakras avec consternation* L'audace de <@TARGET_USER_ID> qui demande pourquoi nous ne sommes pas plus réactifs... La réponse se perd dans le karma. 🦢",
+            "*Trace des augures dans l'air* Le culot cosmique de <@TARGET_USER_ID> qui suggère que nous manquons d'organisation... Les kamis en perdent leur harmonie. 🦢",
+            "*Fait tinter une cloche de temple* L'écho de votre audace résonne moins longtemps que vos absences, <@TARGET_USER_ID>... 🦢",
+            "*Polit son miroir de méditation* Le reflet de votre culot, <@TARGET_USER_ID>, éclipserait presque celui de vos reports de dernière minute... 🦢",
+            "*Consulte les oracles avec stupéfaction* Les augures me parlent d'un MJ qui ose suggérer que nous manquons de motivation... N'est-ce pas, <@TARGET_USER_ID> ? 🦢",
+            "*Disperse des pétales de cerisier* Aussi nombreux que les excuses de <@TARGET_USER_ID>, mais moins créatifs... 🦢",
+
+            // Trauma et Violence
+            "*Médite sur les cicatrices de nos personnages* La thérapie de groupe coûterait moins cher que vos sessions, <@TARGET_USER_ID>... 🦢",
+            "*Contemple les archives des batailles passées* Le PTSD de nos personnages rivalise avec notre anxiété quand <@TARGET_USER_ID> sourit... 🦢",
+            "*Déroule un parchemin des traumatismes* Même les kamis tremblent devant le sourire sadique de <@TARGET_USER_ID>... 🦢",
+            "*Compte les points de blessure* Nos personnages ont plus de cicatrices que <@TARGET_USER_ID> n'a d'excuses... Et ce n'est pas peu dire. 🦢",
+            "*Consulte le registre des morts évitées* Le nombre de jets de survie commence à rivaliser avec vos reports de session, <@TARGET_USER_ID>... 🦢",
+            "*Médite sur la nature du danger* Les probabilités de survie de nos personnages sont plus élevées que celles d'une session régulière avec <@TARGET_USER_ID>... 🦢",
+            "*Brûle de l'encens pour les personnages tombés* Même les Fortunes s'inquiètent de vos plans, <@TARGET_USER_ID>... 🦢",
+            "*Arrange des amulettes de protection* Si seulement elles protégeaient aussi contre vos scénarios, <@TARGET_USER_ID>... 🦢",
+
+            // Taquin et Provocateur
+            "*Contemple un bug dans le code* L'audace de <@TARGET_USER_ID> qui teste les limites du bot rivalise avec celle de tester les limites de notre patience... 🦢",
+            "*Débogue avec une sérénité forcée* Comme le code, la patience a ses limites, <@TARGET_USER_ID>... Mais vous semblez ignorer les deux. 🦢",
+            "*Médite sur la nature des exceptions non gérées* Votre talent pour trouver les failles rivalise avec celui d'esquiver les sessions, <@TARGET_USER_ID>... 🦢",
+            "*Corrige le karma du code* Les bugs sont plus prévisibles que vos sessions, <@TARGET_USER_ID>... Et plus faciles à corriger. 🦢",
+            "*Aligne les chakras des variables* L'harmonie du code est perturbée par votre volonté de chaos, <@TARGET_USER_ID>... 🦢",
+            "*Parse les erreurs avec une grâce étudiée* Le culot de rejeter la faute sur le code... Les voies de la mauvaise foi sont impénétrables, <@TARGET_USER_ID>. 🦢",
+            "*Optimise les performances avec une patience zen* Si seulement vous mettiez autant d'énergie à planifier les sessions, <@TARGET_USER_ID>... 🦢",
+
+            // Sagesse et Méditation
+            "*Émerge d'une profonde méditation* Les voies de la sagesse m'ont révélé que <@TARGET_USER_ID> médite plus souvent sur son téléphone que sur nos sessions... 🦢",
+            "*Arrange son jardin zen* Comme ces graviers, vos promesses de sessions s'éparpillent au vent, <@TARGET_USER_ID>... 🦢",
+            "*Verse du thé avec une précision étudiée* Comme ce thé, la patience des joueurs finira par déborder, <@TARGET_USER_ID>... 🦢",
+            "*Médite sous un cerisier* Les fleurs sont éphémères... Comme vos promesses de sessions régulières, <@TARGET_USER_ID>. 🦢",
+            "*Contemple un koan* Si un MJ annule dans le vide, fait-il vraiment du bruit ? Demandons à <@TARGET_USER_ID>... 🦢",
+            "*Fait tourner son mala avec une grâce étudiée* Le karma nous enseigne que <@TARGET_USER_ID> reviendra peut-être en gastéropode dans sa prochaine vie... Probablement à cause du rythme des sessions. 🦢",
+
+            // Arts Martiaux et Combat
+            "*Pratique ses katas avec grâce* Votre talent pour éviter les sessions, <@TARGET_USER_ID>, rivalise avec mon agilité au combat... 🦢",
+            "*Rengaine son katana avec une lenteur délibérée* La voie du bushido enseigne l'honneur... Pas l'art d'esquiver les sessions, <@TARGET_USER_ID>. 🦢",
+            "*Polit son sabre avec une attention méticuleuse* Plus affûté que les excuses de <@TARGET_USER_ID>... Difficile. 🦢"
+        ],
     },
 
     // Timeout Configuration
@@ -117,6 +188,12 @@ module.exports = {
 
     getRandomRefusal() {
         return this.messages.refusalResponses[Math.floor(Math.random() * this.messages.refusalResponses.length)];
+    },
+    getRandomRoast(){
+        return this.messages.roastResponses[Math.floor(Math.random() * this.messages.roastResponses.length)];
+    },
+    getRandomMJSelfRoast(){
+        return this.messages.mjSelfRoastResponses[Math.floor(Math.random() * this.messages.mjSelfRoastResponses.length)];
     },
 
     // Helper pour formater les messages avec des variables

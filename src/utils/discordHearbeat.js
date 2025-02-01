@@ -8,7 +8,8 @@ function setupDiscordHeartbeat(client) {
         { name: 'faire peur à Megumi', type: ActivityType.Playing },
         { name: 'l\'art du sarcasme zen', type: ActivityType.Competing },
         { name: 'Rituel de Mao ou invasion de rat ?', type: ActivityType.Playing },
-        { name: 'faire tourner la roue Karmique', type: ActivityType.Custom },
+        { name: 'Fait tourner la roue Karmique', type: ActivityType.Custom },
+        { name: 'Pense avoir trouvé un rocher plus solide que Benkei', type: ActivityType.Custom },
     ];
 
     function updateStatus() {

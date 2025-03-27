@@ -177,7 +177,7 @@ module.exports = {
             "*Polit son sabre avec une attention méticuleuse* Plus affûté que les excuses de <@TARGET_USER_ID>... Difficile. 🦢"
         ],
         imminentGifs: [
-            "https://media.giphy.com/media/QBd2kLB5qDmysEXre9/giphy.gif",  // Mr Bean qui regarde sa montre
+            "https://media.giphy.com/media/QBd2kLB5qDmysEXre9/giphy.gif",  // M. Bean qui regarde sa montre
             "https://media.giphy.com/media/FoH28ucxZFJZu/giphy.gif",        // Titanic attente dramatique
             "https://media.giphy.com/media/jZAwc1FZ4TednLkWwu/giphy.gif",   // LeBron "Dame Time"
             "https://media.giphy.com/media/PCvkgunX9ZbEEyfTQH/giphy.gif",   // Ghost "Where you at"
